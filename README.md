@@ -10,6 +10,7 @@
 
 ## ⚡ Quick Start
 ```bash
-git clone https://github.com/InfraVsionary/ELK-essentials-.git
-cd ELK-essentials-
+git clone https://github.com/InfraVsionary/ELK-essentials.git
+cd ELK-essentials
 docker compose up -d
+```
