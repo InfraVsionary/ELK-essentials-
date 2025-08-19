@@ -1,21 +1,3 @@
-# ELK Stack 
-
-> 🚀 A clean, ready-to-run ELK (Elasticsearch, Logstash, Kibana) setup with Docker Compose.
-
-## ✨ Features
-- 📂 **stack/** → Configs (Elasticsearch, Logstash, Filebeat)  
-- 🛠 **scripts/** → Maintenance helpers 
-- 📖 **docs/** → Ops notes  
-- 🐳 **docker-compose.yml** → Modular services  
-
-## ⚡ Quick Start
-```bash
-git clone https://github.com/InfraVsionary/ELK-essentials.git
-cd ELK-essentials
-docker compose up -d
-```
-
-
 # ELK Stack
 
 A clean, ready-to-run ELK (Elasticsearch, Logstash, Kibana) setup with Docker Compose.  
@@ -37,7 +19,9 @@ cd ELK-essentials
 make host-bootstrap
 make up
 
+
 ## Access
 
-Kibana → http://<EC2_PUBLIC_IP>:5601
-Elasticsearch API → http://<EC2_PUBLIC_IP>:9200 (for development use only)
+- Kibana → [http://<EC2_PUBLIC_IP>:5601](http://<EC2_PUBLIC_IP>:5601)  
+- Elasticsearch API → [http://<EC2_PUBLIC_IP>:9200](http://<EC2_PUBLIC_IP>:9200) *(for development use only)*
+
