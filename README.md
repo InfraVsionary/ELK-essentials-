@@ -19,9 +19,6 @@ cd ELK-essentials
 make host-bootstrap
 make up
 
-
-## Access
-
-- Kibana → [http://<EC2_PUBLIC_IP>:5601](http://<EC2_PUBLIC_IP>:5601)  
-- Elasticsearch API → [http://<EC2_PUBLIC_IP>:9200](http://<EC2_PUBLIC_IP>:9200) *(for development use only)*
+- Kibana → [http://<EC2_PUBLIC_IP>:5601] 
+- Elasticsearch API → [http://<EC2_PUBLIC_IP>:9200]
 
