@@ -6,14 +6,13 @@ services:
       - node.name=elasticsearch
       - discovery.type=single-node
       - bootstrap.memory_lock=true
-      - xpack.security.enabled=false
+      - xpack.security.enabled=true            # required for Fleet/Integrations
       - xpack.ml.enabled=false
       - xpack.monitoring.collection.enabled=false
-      - ES_JAVA_OPTS=-Xms256m -Xmx256m
+      - ES_JAVA_OPTS=-Xms512m -Xmx512m         # 256m is tight with security
+      - ELASTIC_PASSWORD=changeme-es           # <— inline, no .env
     ulimits:
-      memlock:
-        soft: -1
-        hard: -1
+      memlock: { soft: -1, hard: -1 }
     ports:
       - "9200:9200"
       - "9300:9300"
@@ -22,20 +21,23 @@ services:
     networks: [elk]
     restart: unless-stopped
     healthcheck:
-      test: ["CMD-SHELL", "curl -fsS http://localhost:9200 >/dev/null || exit 1"]
+      test: ["CMD-SHELL", "curl -fsS -u elastic:changeme-es http://localhost:9200/_cluster/health?wait_for_status=yellow&timeout=5s >/dev/null || exit 1"]
       interval: 15s
       timeout: 5s
-      retries: 25
+      retries: 40
 
   kibana:
     image: docker.elastic.co/kibana/kibana:8.17.0
     container_name: kibana
     environment:
       - ELASTICSEARCH_HOSTS=http://elasticsearch:9200
+      - ELASTICSEARCH_USERNAME=kibana_system
+      - ELASTICSEARCH_PASSWORD=changeme-kibana   # must match the step below
       - TELEMETRY_ENABLED=false
       - DATA_SEARCH_ES_QUERY_ALLOWPARTIALSEARCHRESULTS=true
-      # simple fixed key to prevent startup warnings in dev
       - XPACK_ENCRYPTEDSAVEDOBJECTS_ENCRYPTIONKEY=aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+      # If outbound is restricted, set a reachable registry:
+      # - XPACK_FLEET_REGISTRYURL=https://epr.elastic.co
     ports:
       - "5601:5601"
     depends_on:
@@ -49,6 +51,8 @@ services:
     container_name: logstash
     environment:
       - LS_JAVA_OPTS=-Xms256m -Xmx256m
+      - ELASTIC_USER=elastic
+      - ELASTIC_PASSWORD=changeme-es            # used by output -> ES
     volumes:
       - ./stack/logstash/config/logstash.conf:/usr/share/logstash/pipeline/logstash.conf:ro
       - ./stack/logstash/config/jvm.options:/usr/share/logstash/config/jvm.options:ro
