@@ -4,19 +4,19 @@ host-bootstrap:
 	@./scripts/10-setup-host-elastic.sh
 
 up-core:
-	docker compose up -d elasticsearch kibana
+	docker-compose up -d elasticsearch kibana
 
 up:
-	docker compose up -d
+	docker-compose up -d
 
 down:
-	docker compose down
+	docker-compose down
 
 logs:
-	docker compose logs -f --tail=200
+	docker-compose logs -f --tail=200
 
 ps:
-	docker compose ps
+	docker-compose ps
 
 restart:
-	docker compose down && docker compose up -d
+	docker-compose down && docker-compose up -d
