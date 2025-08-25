@@ -73,6 +73,7 @@ services:
     volumes:
       - ./stack/logstash/config/logstash.conf:/usr/share/logstash/pipeline/logstash.conf:ro
       - ./stack/logstash/config/jvm.options:/usr/share/logstash/config/jvm.options:ro
+      - ./stack/logstash/config/logstash.yml:/usr/share/logstash/config/logstash.yml:ro
     ports:
       - "5044:5044"
     networks: [elk]
