@@ -20,5 +20,5 @@ make host-bootstrap
 make up
 
 - Kibana → [http://<EC2_PUBLIC_IP>:5601] 
-- Elasticsearch API → [http://<EC2_PUBLIC_IP>:9200]
+
 
