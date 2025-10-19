@@ -1,3 +1,5 @@
+version: "3.8"
+
 services:
   elasticsearch:
     image: docker.elastic.co/elasticsearch/elasticsearch:8.17.0
@@ -12,13 +14,16 @@ services:
       - ES_JAVA_OPTS=-Xms512m -Xmx512m
       - ELASTIC_PASSWORD=changeme-es
     ulimits:
-      memlock: { soft: -1, hard: -1 }
-    ports:
-      - "9200:9200"
-      - "9300:9300"
+      memlock:
+        soft: -1
+        hard: -1
+   # ports:
+      # - "9200:9200" # optional, restrict with firewall if remote access not needed
+      # - "9300:9300"
     volumes:
       - elasticsearch-data:/usr/share/elasticsearch/data
-    networks: [elk]
+    networks:
+      - elk
     restart: unless-stopped
     healthcheck:
       test: ["CMD-SHELL", "curl -fsS -u elastic:changeme-es http://localhost:9200/_cluster/health?wait_for_status=yellow&timeout=5s >/dev/null || exit 1"]
@@ -26,7 +31,6 @@ services:
       timeout: 5s
       retries: 40
 
-  # NEW: one-shot init to set kibana_system password
   es-init:
     image: curlimages/curl:8.8.0
     depends_on:
@@ -42,7 +46,8 @@ services:
           -X POST http://elasticsearch:9200/_security/user/kibana_system/_password \
           -d "{\"password\":\"changeme-kibana\"}" && echo " done.";
       '
-    networks: [elk]
+    networks:
+      - elk
     restart: "no"
 
   kibana:
@@ -60,7 +65,8 @@ services:
     depends_on:
       es-init:
         condition: service_completed_successfully
-    networks: [elk]
+    networks:
+      - elk
     restart: unless-stopped
 
   logstash:
@@ -75,24 +81,12 @@ services:
       - ./stack/logstash/config/jvm.options:/usr/share/logstash/config/jvm.options:ro
       - ./stack/logstash/config/logstash.yml:/usr/share/logstash/config/logstash.yml:ro
     ports:
-      - "5044:5044"
-    networks: [elk]
+      - "5044:5044" # for remote Filebeats
+    networks:
+      - elk
     depends_on:
       elasticsearch:
         condition: service_healthy
-    restart: unless-stopped
-
-  filebeat:
-    image: docker.elastic.co/beats/filebeat:8.17.0
-    container_name: filebeat
-    user: root
-    volumes:
-      - ./stack/filebeat/filebeat.yml:/usr/share/filebeat/filebeat.yml:ro
-      - /var/log:/host-logs:ro
-    depends_on:
-      elasticsearch:
-        condition: service_healthy
-    networks: [elk]
     restart: unless-stopped
 
 volumes:
@@ -101,3 +95,4 @@ volumes:
 networks:
   elk:
     driver: bridge
+
